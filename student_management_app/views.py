@@ -23,23 +23,35 @@ def doLogin(request):
         return render(request, 'login_page.html')
 
     try:
-        user = CustomUser.objects.filter(email=email_id).last()
+        candidates = list(CustomUser.objects.filter(email=email_id))
     except DatabaseError:
         messages.error(request, 'Login is temporarily unavailable due to a database issue. Please try again later.')
         return render(request, 'login_page.html')
 
-    if not user or not check_password(password, user.password):
+    # If duplicate emails exist, choose among accounts that match the password
+    # and prefer HOD over Staff over Student for deterministic redirects.
+    matched_users = [u for u in candidates if check_password(password, u.password)]
+    if not matched_users:
         messages.error(request, 'Invalid Login Credentials!!')
         return render(request, 'login_page.html')
 
-    login(request, user)
+    role_priority = {
+        CustomUser.HOD: 0,
+        CustomUser.STAFF: 1,
+        CustomUser.STUDENT: 2,
+    }
+    matched_users.sort(key=lambda u: (role_priority.get(str(u.user_type), 99), -int(u.is_superuser), -int(u.is_staff), -u.id))
+    user = matched_users[0]
 
-    if user.user_type == CustomUser.STUDENT:
-        return redirect('student_home/')
-    elif user.user_type == CustomUser.STAFF:
-        return redirect('staff_home/')
-    elif user.user_type == CustomUser.HOD:
-        return redirect('admin_home/')
+    login(request, user)
+    user_type = str(user.user_type)
+
+    if user_type == CustomUser.STUDENT:
+        return redirect('student_home')
+    elif user_type == CustomUser.STAFF:
+        return redirect('staff_home')
+    elif user_type == CustomUser.HOD:
+        return redirect('admin_home')
 
     return render(request, 'home.html')
 

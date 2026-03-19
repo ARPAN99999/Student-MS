@@ -485,8 +485,8 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-{{ subject_list|default:list|json_script:"staff-subject-list" }}
-{{ attendance_list|default:list|json_script:"staff-attendance-list" }}
+{{ subject_list|json_script:"staff-subject-list" }}
+{{ attendance_list|json_script:"staff-attendance-list" }}
 <script>
   var subjectListData = JSON.parse(document.getElementById('staff-subject-list').textContent || '[]');
   var attendanceListData = JSON.parse(document.getElementById('staff-attendance-list').textContent || '[]');

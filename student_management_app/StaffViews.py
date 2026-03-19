@@ -12,6 +12,14 @@ from .models import CustomUser, Staffs, Courses, Subjects, Students, SessionYear
 
 
 def staff_home(request):
+    user_type = str(getattr(request.user, 'user_type', ''))
+    if user_type == CustomUser.HOD:
+        return redirect('admin_home')
+    if user_type == CustomUser.STUDENT:
+        return redirect('student_home')
+    if user_type != CustomUser.STAFF:
+        messages.error(request, "You are not authorized to access staff dashboard.")
+        return redirect('login')
   
     # Fetching All Students under Staff
     print(request.user.id)

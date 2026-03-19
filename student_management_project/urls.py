@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('admin/blogs/post/', RedirectView.as_view(url='/admin/', permanent=False)),
+    path('admin/blogs/post', RedirectView.as_view(url='/admin/', permanent=False)),
     path('admin/', admin.site.urls),
     path('', include('student_management_app.urls')),
 ]

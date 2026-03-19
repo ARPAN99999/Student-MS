@@ -12,6 +12,14 @@ from .models import CustomUser, Staffs, Courses, Subjects, Students, SessionYear
 
 
 def admin_home(request):
+    user_type = str(getattr(request.user, 'user_type', ''))
+    if user_type == CustomUser.STAFF:
+        return redirect('staff_home')
+    if user_type == CustomUser.STUDENT:
+        return redirect('student_home')
+    if user_type != CustomUser.HOD:
+        messages.error(request, "You are not authorized to access admin dashboard.")
+        return redirect('login')
     
     all_student_count = Students.objects.all().count()
     subject_count = Subjects.objects.all().count()
