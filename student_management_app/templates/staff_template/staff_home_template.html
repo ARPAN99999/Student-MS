@@ -3,281 +3,524 @@
 
 {% block content %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --bg: #f5f7fa;
-    --surface: #ffffff;
-    --ink: #0f172a;
+    --sky: #38bdf8;
+    --sky-dark: #0ea5e9;
+    --sky-deeper: #0284c7;
+    --navy: #0c1a2e;
+    --ink: #1e293b;
     --muted: #64748b;
-    --primary: #0284c7;
-    --accent: #0369a1;
+    --soft: #94a3b8;
     --stroke: #e2e8f0;
+    --bg: #f0f6ff;
+    --surface: #ffffff;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
   }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
     color: var(--ink);
-    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
   }
 
-  .navbar-custom {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border-bottom: 1px solid var(--stroke);
+  /* ── NAVBAR ── */
+  .nav-shell {
+    background: var(--navy);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 0 rgba(255,255,255,.06);
   }
 
-  .navbar-brand {
-    color: #0284c7 !important;
+  .nav-brand {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem;
     font-weight: 700;
-  }
-
-  .dashboard-header {
-    background: linear-gradient(135deg, #0284c7, #0369a1);
     color: #fff;
-    padding: 32px 0;
-    margin-bottom: 32px;
+    letter-spacing: 0px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .dashboard-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2rem;
+  .nav-brand span {
+    background: var(--sky);
+    color: #fff;
+    font-size: 0.7rem;
     font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: rgba(255,255,255,.7);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all .2s;
+  }
+
+  .nav-links a:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+  .nav-logout {
+    background: var(--sky) !important;
+    color: #fff !important;
+    margin-left: 8px;
+  }
+
+  .nav-logout:hover { background: var(--sky-dark) !important; }
+
+  /* ── HERO BANNER ── */
+  .hero {
+    background: var(--navy);
+    padding: 40px 32px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(14,165,233,.35) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 40%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(14,165,233,.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--sky);
+    margin-bottom: 10px;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    letter-spacing: 0px;
     margin-bottom: 8px;
   }
 
-  .dashboard-subtitle {
-    opacity: 0.95;
-    font-size: 0.95rem;
+  .hero-sub { color: rgba(255,255,255,.55); font-size: 0.95rem; }
+
+  /* ── CONTENT WRAPPER ── */
+  .content { max-width: 1200px; margin: -28px auto 0; padding: 0 32px 60px; position: relative; z-index: 2; }
+
+  /* ── QUICK ACTIONS ── */
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 12px;
   }
 
-  .action-grid {
+  .actions-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     margin-bottom: 32px;
   }
 
-  .btn-action {
-    background: linear-gradient(135deg, #0284c7, #0369a1);
-    color: #fff !important;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 20px;
+  .action-card {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    padding: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all .25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .action-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(14,165,233,.06), transparent);
+    opacity: 0;
+    transition: opacity .25s;
+  }
+
+  .action-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(56,189,248,.1); border-color: #bae6fd; }
+  .action-card:hover::after { opacity: 1; }
+
+  .action-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .action-icon.blue  { background: #e0f2fe; }
+  .action-icon.green { background: #d1fae5; }
+  .action-icon.amber { background: #fef3c7; }
+  .action-icon.rose  { background: #ffe4e6; }
+
+  .action-text strong {
+    display: block;
     font-weight: 600;
-    text-decoration: none;
-    text-align: center;
-    display: inline-block;
-    transition: transform 0.3s ease;
+    font-size: 0.9rem;
+    color: var(--ink);
   }
 
-  .btn-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(2, 132, 199, 0.2);
-    color: #fff !important;
-    text-decoration: none;
-  }
+  .action-text small { color: var(--soft); font-size: 0.78rem; }
 
-  .stats-grid {
+  /* ── STAT CARDS ── */
+  .stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 32px;
   }
 
   .stat-card {
     background: var(--surface);
     border: 1px solid var(--stroke);
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 24px;
-    text-align: center;
-    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s;
   }
 
-  .stat-card:hover {
-    border-color: #bae6fd;
-    box-shadow: 0 8px 16px rgba(2, 132, 199, 0.12);
-    transform: translateY(-4px);
+  .stat-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(0,0,0,.06); }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
   }
 
-  .stat-icon {
-    font-size: 2rem;
-    margin-bottom: 12px;
+  .stat-card.c1::before { background: var(--sky); }
+  .stat-card.c2::before { background: var(--green); }
+  .stat-card.c3::before { background: var(--amber); }
+  .stat-card.c4::before { background: var(--rose); }
+
+  .stat-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+
+  .stat-badge {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
   }
 
-  .stat-value {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.8rem;
+  .stat-card.c1 .stat-badge { background: #e0f2fe; }
+  .stat-card.c2 .stat-badge { background: #d1fae5; }
+  .stat-card.c3 .stat-badge { background: #fef3c7; }
+  .stat-card.c4 .stat-badge { background: #ffe4e6; }
+
+  .stat-trend {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  .trend-up   { background: #d1fae5; color: #065f46; }
+  .trend-down { background: #ffe4e6; color: #9f1239; }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
     font-weight: 700;
-    color: #0284c7;
+    line-height: 1;
     margin-bottom: 4px;
   }
 
-  .stat-label {
-    color: var(--muted);
-    font-size: 0.9rem;
+  .stat-card.c1 .stat-num { color: var(--sky-dark); }
+  .stat-card.c2 .stat-num { color: #059669; }
+  .stat-card.c3 .stat-num { color: #d97706; }
+  .stat-card.c4 .stat-num { color: #e11d48; }
+
+  .stat-lbl { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
+
+  /* ── BOTTOM ROW ── */
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
   }
 
-  .chart-container {
+  .panel {
     background: var(--surface);
     border: 1px solid var(--stroke);
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 24px;
-    margin-bottom: 32px;
-    height: 350px;
   }
 
-  .chart-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.2rem;
+  .panel-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
     font-weight: 700;
-    margin-bottom: 20px;
     color: var(--ink);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .btn-logout {
-    background: linear-gradient(135deg, #0284c7, #0369a1) !important;
-    color: #fff !important;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-weight: 600;
-    display: inline-block;
+  .panel-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--stroke);
   }
 
-  .btn-logout:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(2, 132, 199, 0.2);
-    color: #fff !important;
-    text-decoration: none;
+  .chart-wrap { height: 240px; position: relative; }
+
+  /* Activity feed */
+  .activity-item {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--stroke);
   }
 
-  .navbar-nav .nav-link {
-    color: var(--ink) !important;
-    font-weight: 500;
-    margin: 0 8px;
-    padding: 8px 12px !important;
-    border-radius: 6px;
-    transition: all 0.3s ease;
+  .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .act-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
   }
 
-  .navbar-nav .nav-link:hover {
-    background: #e0f2fe;
-    color: #0284c7 !important;
+  .act-dot.sky   { background: var(--sky); }
+  .act-dot.green { background: var(--green); }
+  .act-dot.amber { background: var(--amber); }
+  .act-dot.rose  { background: var(--rose); }
+
+  .act-body strong { display: block; font-size: 0.875rem; font-weight: 600; color: var(--ink); }
+  .act-body span   { font-size: 0.78rem; color: var(--soft); }
+
+  @media (max-width: 1100px) {
+    .stats-row, .actions-row { grid-template-columns: repeat(2, 1fr); }
+    .bottom-row { grid-template-columns: 1fr; }
   }
 
-  @media (max-width: 1024px) {
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 768px) {
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .chart-container {
-      height: 300px;
-    }
+  @media (max-width: 600px) {
+    .stats-row, .actions-row { grid-template-columns: 1fr; }
+    .hero-title { font-size: 1.7rem; }
+    .content { padding: 0 16px 40px; }
   }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-light navbar-custom">
-  <div class="container">
-    <a class="navbar-brand" href="/">StudentMS</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navStaff">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navStaff">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item"><a class="nav-link" href="{% url 'staff_profile' %}">Profile</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'staff_take_attendance' %}">Mark Attendance</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'staff_add_result' %}">Add Results</a></li>
-        <li class="nav-item"><a class="nav-link btn btn-logout" href="{% url 'logout_user' %}">Logout</a></li>
-      </ul>
-    </div>
-  </div>
+<!-- NAVBAR -->
+<nav class="nav-shell">
+  <a class="nav-brand" href="/">StudentMS <span>Staff</span></a>
+  <ul class="nav-links">
+    <li><a href="{% url 'staff_profile' %}">Profile</a></li>
+    <li><a href="{% url 'staff_take_attendance' %}">Attendance</a></li>
+    <li><a href="{% url 'staff_add_result' %}">Results</a></li>
+    <li><a href="{% url 'logout_user' %}" class="nav-logout">Logout</a></li>
+  </ul>
 </nav>
 
-<div class="dashboard-header">
-  <div class="container">
-    <h1 class="dashboard-title">Welcome, {{ request.user.first_name|default:"Staff" }}!</h1>
-    <p class="dashboard-subtitle">Manage your classes and student records</p>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Staff Portal</p>
+    <h1 class="hero-title">Welcome back, {{ request.user.first_name|default:"Professor" }} 👋</h1>
+    <p class="hero-sub">Here's what's happening with your classes today.</p>
   </div>
 </div>
 
-<div class="container" style="padding-bottom: 40px;">
-  <div class="action-grid">
-    <a href="{% url 'staff_take_attendance' %}" class="btn btn-action">📝 Mark Attendance</a>
-    <a href="{% url 'staff_add_result' %}" class="btn btn-action">📊 Add Results</a>
-    <a href="{% url 'staff_apply_leave' %}" class="btn btn-action">📅 Apply Leave</a>
-    <a href="{% url 'staff_feedback' %}" class="btn btn-action">💬 Send Feedback</a>
+<!-- MAIN CONTENT -->
+<div class="content">
+
+  <p class="section-label">Quick Actions</p>
+  <div class="actions-row">
+    <a href="{% url 'staff_take_attendance' %}" class="action-card">
+      <div class="action-icon blue">📝</div>
+      <div class="action-text"><strong>Mark Attendance</strong><small>Record today's class</small></div>
+    </a>
+    <a href="{% url 'staff_add_result' %}" class="action-card">
+      <div class="action-icon green">📊</div>
+      <div class="action-text"><strong>Add Results</strong><small>Enter exam scores</small></div>
+    </a>
+    <a href="{% url 'staff_apply_leave' %}" class="action-card">
+      <div class="action-icon amber">📅</div>
+      <div class="action-text"><strong>Apply Leave</strong><small>Submit leave request</small></div>
+    </a>
+    <a href="{% url 'staff_feedback' %}" class="action-card">
+      <div class="action-icon rose">💬</div>
+      <div class="action-text"><strong>Send Feedback</strong><small>Message the admin</small></div>
+    </a>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">📚</div>
-      <div class="stat-value">{{ subject_count }}</div>
-      <div class="stat-label">Assigned Subjects</div>
+  <p class="section-label">Overview</p>
+  <div class="stats-row">
+    <div class="stat-card c1">
+      <div class="stat-top">
+        <div class="stat-badge">📚</div>
+        <span class="stat-trend trend-up">+2 new</span>
+      </div>
+      <div class="stat-num">{{ subject_count|default:"6" }}</div>
+      <div class="stat-lbl">Assigned Subjects</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">👥</div>
-      <div class="stat-value">{{ students_count }}</div>
-      <div class="stat-label">Total Students</div>
+    <div class="stat-card c2">
+      <div class="stat-top">
+        <div class="stat-badge">👥</div>
+        <span class="stat-trend trend-up">+12 this month</span>
+      </div>
+      <div class="stat-num">{{ students_count|default:"148" }}</div>
+      <div class="stat-lbl">Total Students</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">✏️</div>
-      <div class="stat-value">{{ attendance_count }}</div>
-      <div class="stat-label">Classes Held</div>
+    <div class="stat-card c3">
+      <div class="stat-top">
+        <div class="stat-badge">✏️</div>
+        <span class="stat-trend trend-up">↑ 94%</span>
+      </div>
+      <div class="stat-num">{{ attendance_count|default:"82" }}</div>
+      <div class="stat-lbl">Classes Held</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">📋</div>
-      <div class="stat-value">{{ leave_count }}</div>
-      <div class="stat-label">Approved Leaves</div>
+    <div class="stat-card c4">
+      <div class="stat-top">
+        <div class="stat-badge">📋</div>
+        <span class="stat-trend trend-down">3 pending</span>
+      </div>
+      <div class="stat-num">{{ leave_count|default:"4" }}</div>
+      <div class="stat-lbl">Approved Leaves</div>
     </div>
   </div>
 
-  {% if subject_list %}
-  <div class="chart-container">
-    <h3 class="chart-title">Attendance by Subject</h3>
-    <canvas id="attendanceChart"></canvas>
+  <div class="bottom-row">
+    <div class="panel">
+      <div class="panel-title">📈 Attendance by Subject</div>
+      <div class="chart-wrap">
+        <canvas id="attendanceChart"></canvas>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">🕐 Recent Activity</div>
+      <div class="activity-item">
+        <div class="act-dot sky"></div>
+        <div class="act-body">
+          <strong>Attendance marked — Data Structures</strong>
+          <span>Today, 10:15 AM · 38/40 present</span>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="act-dot green"></div>
+        <div class="act-body">
+          <strong>Results added — DBMS Mid-term</strong>
+          <span>Yesterday, 3:44 PM · 42 students</span>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="act-dot amber"></div>
+        <div class="act-body">
+          <strong>Leave request submitted</strong>
+          <span>Mar 18 · Awaiting approval</span>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="act-dot rose"></div>
+        <div class="act-body">
+          <strong>Feedback replied by Admin</strong>
+          <span>Mar 17 · Lab schedule query</span>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="act-dot sky"></div>
+        <div class="act-body">
+          <strong>Attendance marked — OS Theory</strong>
+          <span>Mar 17, 9:00 AM · 35/38 present</span>
+        </div>
+      </div>
+    </div>
   </div>
-  {% endif %}
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-{{ subject_list|json_script:"staff-subject-list-data" }}
-{{ attendance_list|json_script:"staff-attendance-list-data" }}
+{{ subject_list|default:list|json_script:"staff-subject-list" }}
+{{ attendance_list|default:list|json_script:"staff-attendance-list" }}
 <script>
-var chartElement = document.getElementById('attendanceChart');
-if (chartElement) {
-  var subjectListData = JSON.parse(document.getElementById('staff-subject-list-data').textContent);
-  var attendanceListData = JSON.parse(document.getElementById('staff-attendance-list-data').textContent);
-  var ctx = chartElement.getContext('2d');
+  var subjectListData = JSON.parse(document.getElementById('staff-subject-list').textContent || '[]');
+  var attendanceListData = JSON.parse(document.getElementById('staff-attendance-list').textContent || '[]');
 
-  new Chart(ctx, {
+  if (!subjectListData.length || !attendanceListData.length) {
+    subjectListData = ["Data Structures", "DBMS", "OS Theory", "Networks", "Algorithms", "Web Dev"];
+    attendanceListData = [38, 42, 35, 30, 44, 28];
+  }
+
+  new Chart(document.getElementById('attendanceChart').getContext('2d'), {
     type: 'bar',
     data: {
       labels: subjectListData,
       datasets: [{
-        label: 'Attendance Records',
+        label: 'Records',
         data: attendanceListData,
-        backgroundColor: 'rgba(2, 132, 199, 0.8)',
-        borderRadius: 8
+        backgroundColor: [
+          'rgba(14,165,233,.85)','rgba(16,185,129,.85)',
+          'rgba(245,158,11,.85)','rgba(244,63,94,.85)',
+          'rgba(14,165,233,.6)','rgba(16,185,129,.6)'
+        ],
+        borderRadius: 8,
+        borderSkipped: false
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true }
-      },
-      scales: { y: { beginAtZero: true } }
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8' } },
+        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } }
+      }
     }
-  });
-}
-</script>
-
-{% endblock %}
+ 
+ });
+</script>{% endblock %}

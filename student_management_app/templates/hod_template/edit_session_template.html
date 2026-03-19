@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'hod_template/_hod_ui_shell.html' %}
+<div class="container mt-4 mb-5">
+  <h3>Edit Session Year</h3>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST" action="{% url 'edit_session_save' %}" class="card p-3">
+    {% csrf_token %}
+    <input type="hidden" name="session_id" value="{{ session_year.id }}">
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label>Session Start Year</label>
+        <input type="text" name="session_start_year" class="form-control" value="{{ session_year.session_start_year }}" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label>Session End Year</label>
+        <input type="text" name="session_end_year" class="form-control" value="{{ session_year.session_end_year }}" required>
+      </div>
+    </div>
+
+    <div>
+      <button type="submit" class="btn btn-primary">Update Session</button>
+      <a href="{% url 'manage_session' %}" class="btn btn-secondary">Back</a>
+    </div>
+  </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'hod_template/_hod_ui_shell.html' %}
+<div class="container mt-4 mb-5">
+  <h3>Admin View Attendance</h3>
+
+  <div class="card p-3 mb-3">
+    <div class="row">
+      <div class="col-md-4 mb-2">
+        <label>Subject</label>
+        <select id="subject" class="form-control">
+          <option value="">Select Subject</option>
+          {% for subject in subjects %}
+            <option value="{{ subject.id }}">{{ subject.subject_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4 mb-2">
+        <label>Session Year</label>
+        <select id="session_year" class="form-control">
+          <option value="">Select Session</option>
+          {% for year in session_years %}
+            <option value="{{ year.id }}">{{ year.session_start_year }} - {{ year.session_end_year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4 mb-2 d-flex align-items-end">
+        <button id="fetch_dates" class="btn btn-secondary">Fetch Attendance Dates</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-3 mb-3">
+    <div class="row">
+      <div class="col-md-8 mb-2">
+        <label>Attendance Date</label>
+        <select id="attendance_date" class="form-control">
+          <option value="">Select Attendance Date</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-2 d-flex align-items-end">
+        <button id="fetch_students" class="btn btn-primary">Fetch Students</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-3">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="student_rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function parseMaybeJson(value) {
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch (e) {
+      return [];
+    }
+  }
+  return value;
+}
+
+document.getElementById('fetch_dates').addEventListener('click', function() {
+  const subject = document.getElementById('subject').value;
+  const sessionYearId = document.getElementById('session_year').value;
+  if (!subject || !sessionYearId) {
+    alert('Select subject and session year first.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('subject', subject);
+  formData.append('session_year_id', sessionYearId);
+
+  fetch("{% url 'admin_get_attendance_dates' %}", {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+    body: formData
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    const dates = parseMaybeJson(data);
+    const select = document.getElementById('attendance_date');
+    select.innerHTML = '<option value="">Select Attendance Date</option>';
+    dates.forEach((item) => {
+      const option = document.createElement('option');
+      option.value = item.id;
+      option.text = item.attendance_date;
+      select.appendChild(option);
+    });
+  });
+});
+
+document.getElementById('fetch_students').addEventListener('click', function() {
+  const attendanceDate = document.getElementById('attendance_date').value;
+  if (!attendanceDate) {
+    alert('Select attendance date first.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('attendance_date', attendanceDate);
+
+  fetch("{% url 'admin_get_attendance_student' %}", {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+    body: formData
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    const students = parseMaybeJson(data);
+    const body = document.getElementById('student_rows');
+    body.innerHTML = '';
+
+    students.forEach((student) => {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td>' + student.name + '</td>' +
+                      '<td>' + (student.status ? 'Present' : 'Absent') + '</td>';
+      body.appendChild(row);
+    });
+  });
+});
+</script>
+{% endblock content %}

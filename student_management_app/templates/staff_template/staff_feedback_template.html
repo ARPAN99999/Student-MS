@@ -1,50 +1,407 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-4 mb-5">
-  <h3>Send Feedback</h3>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --sky: #0ea5e9;
+    --sky-dark: #0284c7;
+    --navy: #0c1a2e;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --soft: #94a3b8;
+    --stroke: #e2e8f0;
+    --bg: #f0f6ff;
+    --surface: #ffffff;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+    --purple: #8b5cf6;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); }
+
+  .nav-shell {
+    background: var(--navy); padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px; position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: #fff; text-decoration: none; }
+  .nav-back {
+    color: rgba(255,255,255,.7); text-decoration: none; font-size: 0.875rem;
+    font-weight: 500; padding: 6px 14px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.15); transition: all .2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+  .page-head {
+    background: var(--navy); padding: 32px 40px 52px;
+    position: relative; overflow: hidden;
+  }
+  .page-head::before {
+    content: ''; position: absolute; top: -50px; right: 15%;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(139,92,246,.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-head-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+  .breadcrumb-trail { font-size: 0.75rem; color: var(--purple); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+  .page-sub { color: rgba(255,255,255,.5); font-size: 0.9rem; margin-top: 4px; }
+
+  .main { max-width: 900px; margin: -24px auto 0; padding: 0 40px 60px; position: relative; z-index: 2; }
+
+  .layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+
+  /* Compose card */
+  .compose-card {
+    background: var(--surface); border: 1px solid var(--stroke);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+  }
+
+  .compose-head {
+    padding: 20px 24px; border-bottom: 1px solid var(--stroke);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .compose-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: #f3e8ff; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+
+  .compose-head-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
+  .compose-head-sub { font-size: 0.78rem; color: var(--soft); }
+
+  .compose-body { padding: 24px; }
+
+  textarea.msg-area {
+    width: 100%; border: 1.5px solid var(--stroke);
+    border-radius: 12px; padding: 14px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    color: var(--ink); resize: vertical; min-height: 140px;
+    outline: none; transition: all .2s; background: #f8fafc; line-height: 1.6;
+  }
+  textarea.msg-area:focus { border-color: var(--purple); background: #fff; box-shadow: 0 0 0 3px rgba(139,92,246,.1); }
+
+  .char-count { text-align: right; font-size: 0.75rem; color: var(--soft); margin-top: 6px; }
+
+  .quick-templates { margin-bottom: 16px; }
+  .template-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+
+  .templates-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .template-chip {
+    font-size: 0.75rem; font-weight: 600; padding: 5px 12px;
+    border-radius: 20px; border: 1.5px solid var(--stroke);
+    background: transparent; cursor: pointer; color: var(--muted);
+    transition: all .2s;
+  }
+  .template-chip:hover { border-color: var(--purple); color: var(--purple); background: #f3e8ff; }
+
+  .btn-send {
+    background: linear-gradient(135deg, #7c3aed, var(--purple));
+    color: #fff; border: none; border-radius: 10px;
+    padding: 11px 28px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    transition: all .2s; display: inline-flex; align-items: center; gap: 8px; width: 100%;
+    justify-content: center; margin-top: 16px;
+  }
+  .btn-send:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139,92,246,.3); }
+
+  /* Sidebar stats */
+  .sidebar-stats {
+    background: var(--surface); border: 1px solid var(--stroke);
+    border-radius: 16px; padding: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-title { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+
+  .mini-stat { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--stroke); }
+  .mini-stat:last-child { border-bottom: none; }
+  .mini-stat-label { font-size: 0.82rem; color: var(--muted); }
+  .mini-stat-value { font-weight: 700; font-size: 0.9rem; color: var(--ink); }
+
+  /* History table */
+  .history-card {
+    background: var(--surface); border: 1px solid var(--stroke);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    margin-top: 20px;
+  }
+
+  .history-head {
+    padding: 18px 24px; border-bottom: 1px solid var(--stroke);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .history-head-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
+
+  .filter-tabs { display: flex; gap: 4px; }
+  .tab {
+    font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 6px;
+    border: 1.5px solid transparent; cursor: pointer; transition: all .2s;
+    color: var(--soft);
+  }
+  .tab.active { background: #f3e8ff; color: var(--purple); border-color: #ddd6fe; }
+  .tab:hover { color: var(--purple); }
+
+  /* Feedback thread items */
+  .feedback-thread { padding: 0 24px 16px; }
+
+  .feedback-item {
+    border: 1.5px solid var(--stroke); border-radius: 12px;
+    overflow: hidden; margin-top: 16px;
+  }
+
+  .fb-question {
+    padding: 14px 16px; background: #f8fafc;
+    display: flex; gap: 12px;
+  }
+
+  .fb-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+  }
+
+  .fb-meta { font-size: 0.75rem; color: var(--soft); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+
+  .fb-text { font-size: 0.875rem; color: var(--ink); line-height: 1.5; }
+
+  .status-pill {
+    font-size: 0.68rem; font-weight: 700; padding: 2px 7px;
+    border-radius: 20px;
+  }
+
+  .status-replied  { background: #d1fae5; color: #065f46; }
+  .status-pending  { background: #fef3c7; color: #92400e; }
+
+  .fb-reply {
+    padding: 14px 16px; border-top: 1px solid var(--stroke);
+    display: flex; gap: 12px; background: #fff;
+  }
+
+  .fb-reply-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+  }
+
+  .no-reply {
+    padding: 12px 16px; border-top: 1px solid var(--stroke);
+    font-size: 0.82rem; color: var(--soft); font-style: italic;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .main { padding: 0 16px 40px; }
+  }
+</style>
+
+<nav class="nav-shell">
+  <a class="nav-brand" href="/">StudentMS</a>
+  <a href="{% url 'staff_home' %}" class="nav-back">← Dashboard</a>
+</nav>
+
+<div class="page-head">
+  <div class="page-head-inner">
+    <p class="breadcrumb-trail">Staff Portal → Feedback</p>
+    <h1 class="page-title">💬 Send Feedback</h1>
+    <p class="page-sub">Share suggestions, concerns, or queries with the admin team.</p>
+  </div>
+</div>
+
+<div class="main">
+
   {% if messages %}
     {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      <div style="background:#d1fae5;border:1.5px solid #6ee7b7;color:#065f46;border-radius:10px;padding:12px 18px;margin-bottom:16px;font-weight:600;">
+        ✅ {{ message }}
+      </div>
     {% endfor %}
   {% endif %}
 
-  <form method="POST" action="{% url 'staff_feedback_save' %}" class="card p-3 mb-4">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label>Feedback Message</label>
-      <textarea name="feedback_message" rows="4" class="form-control" required></textarea>
-    </div>
+  <div class="layout">
+    <!-- LEFT: Compose -->
     <div>
-      <button type="submit" class="btn btn-primary">Send</button>
-      <a href="{% url 'staff_home' %}" class="btn btn-secondary">Back</a>
+      <form method="POST" action="{% url 'staff_feedback_save' %}" class="compose-card">
+        {% csrf_token %}
+        <div class="compose-head">
+          <div class="compose-icon">💬</div>
+          <div>
+            <div class="compose-head-title">New Feedback</div>
+            <div class="compose-head-sub">Message goes directly to admin</div>
+          </div>
+        </div>
+        <div class="compose-body">
+          <div class="quick-templates">
+            <div class="template-label">Quick Templates</div>
+            <div class="templates-row">
+              <button type="button" class="template-chip" onclick="setTemplate('Lab schedule needs to be updated for next week.')">📅 Schedule</button>
+              <button type="button" class="template-chip" onclick="setTemplate('Requesting additional resources for my students.')">📚 Resources</button>
+              <button type="button" class="template-chip" onclick="setTemplate('There is a technical issue with the portal I need help with.')">🛠️ Tech Issue</button>
+              <button type="button" class="template-chip" onclick="setTemplate('I have a suggestion to improve student engagement.')">💡 Suggestion</button>
+            </div>
+          </div>
+          <textarea class="msg-area" name="feedback_message" id="feedback_message" placeholder="Write your feedback or query here…" required oninput="updateCount(this)"></textarea>
+          <div class="char-count"><span id="char-count">0</span> / 500 characters</div>
+          <button type="submit" class="btn-send">📤 Send Feedback</button>
+        </div>
+      </form>
     </div>
-  </form>
 
-  <div class="card p-3">
-    <h5>Feedback History</h5>
-    <div class="table-responsive">
-      <table class="table table-bordered table-sm">
-        <thead>
-          <tr>
-            <th>Feedback</th>
-            <th>Reply</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in feedback_data %}
-          <tr>
-            <td>{{ item.feedback }}</td>
-            <td>{{ item.feedback_reply|default:'-' }}</td>
-            <td>{{ item.created_at }}</td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="3">No feedback sent yet.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <!-- RIGHT: Sidebar -->
+    <div>
+      <div class="sidebar-stats">
+        <div class="sidebar-title">📊 Your Stats</div>
+        <div class="mini-stat">
+          <span class="mini-stat-label">Total Sent</span>
+          <span class="mini-stat-value">7</span>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-stat-label">Replied</span>
+          <span class="mini-stat-value" style="color:var(--green);">5</span>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-stat-label">Pending</span>
+          <span class="mini-stat-value" style="color:var(--amber);">2</span>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-stat-label">Avg Response</span>
+          <span class="mini-stat-value">~1.2 days</span>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);border-radius:14px;padding:20px;color:#fff;">
+        <div style="font-size:1.4rem;margin-bottom:6px;">💡</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:6px;">Tips for great feedback</div>
+        <ul style="font-size:0.8rem;opacity:.85;line-height:1.7;padding-left:16px;">
+          <li>Be specific about the issue</li>
+          <li>Include dates or subject names</li>
+          <li>Suggest a solution if possible</li>
+        </ul>
+      </div>
     </div>
   </div>
+
+  <!-- HISTORY -->
+  <div class="history-card">
+    <div class="history-head">
+      <div class="history-head-title">📜 Feedback History</div>
+      <div class="filter-tabs">
+        <div class="tab active">All</div>
+        <div class="tab">Replied</div>
+        <div class="tab">Pending</div>
+      </div>
+    </div>
+
+    <div class="feedback-thread">
+
+      <!-- Demo + dynamic items -->
+      {% for item in feedback_data %}
+      <div class="feedback-item">
+        <div class="fb-question">
+          <div class="fb-avatar">Me</div>
+          <div style="flex:1;">
+            <div class="fb-meta">
+              You · {{ item.created_at }}
+              {% if item.feedback_reply %}
+                <span class="status-pill status-replied">Replied</span>
+              {% else %}
+                <span class="status-pill status-pending">Pending</span>
+              {% endif %}
+            </div>
+            <div class="fb-text">{{ item.feedback }}</div>
+          </div>
+        </div>
+        {% if item.feedback_reply %}
+        <div class="fb-reply">
+          <div class="fb-reply-avatar">AD</div>
+          <div style="flex:1;">
+            <div class="fb-meta">Admin · Reply</div>
+            <div class="fb-text">{{ item.feedback_reply }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="no-reply">⏳ Awaiting admin reply…</div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <!-- DEMO DATA when no real feedback -->
+      <div class="feedback-item">
+        <div class="fb-question">
+          <div class="fb-avatar">Me</div>
+          <div style="flex:1;">
+            <div class="fb-meta">You · Mar 17, 2025 <span class="status-pill status-replied">Replied</span></div>
+            <div class="fb-text">The lab schedule for Data Structures conflicts with the OS lecture on Thursdays. Could this be adjusted?</div>
+          </div>
+        </div>
+        <div class="fb-reply">
+          <div class="fb-reply-avatar">AD</div>
+          <div style="flex:1;">
+            <div class="fb-meta">Admin · Mar 18, 2025</div>
+            <div class="fb-text">Thank you for flagging this! We've adjusted the DS lab to Fridays from 2–4 PM. Please check the updated timetable.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feedback-item">
+        <div class="fb-question">
+          <div class="fb-avatar">Me</div>
+          <div style="flex:1;">
+            <div class="fb-meta">You · Mar 15, 2025 <span class="status-pill status-replied">Replied</span></div>
+            <div class="fb-text">Requesting access to the digital projector in Room 204 for my DBMS demonstrations next week.</div>
+          </div>
+        </div>
+        <div class="fb-reply">
+          <div class="fb-reply-avatar">AD</div>
+          <div style="flex:1;">
+            <div class="fb-meta">Admin · Mar 15, 2025</div>
+            <div class="fb-text">Access has been granted! Room 204 is booked for you Tue–Thu next week. Projector PIN is in your email.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feedback-item">
+        <div class="fb-question">
+          <div class="fb-avatar">Me</div>
+          <div style="flex:1;">
+            <div class="fb-meta">You · Mar 19, 2025 <span class="status-pill status-pending">Pending</span></div>
+            <div class="fb-text">I have a suggestion regarding the student portal — a bulk export feature for attendance records would save a lot of time.</div>
+          </div>
+        </div>
+        <div class="no-reply">⏳ Awaiting admin reply…</div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+
 </div>
+
+<script>
+  function updateCount(el) {
+    document.getElementById('char-count').textContent = el.value.length;
+  }
+
+  function setTemplate(text) {
+    const el = document.getElementById('feedback_message');
+    el.value = text;
+    updateCount(el);
+    el.focus();
+  }
+</script>
+
 {% endblock content %}

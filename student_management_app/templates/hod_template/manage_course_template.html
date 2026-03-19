@@ -4,8 +4,8 @@
 {% include 'hod_template/_hod_ui_shell.html' %}
 <div class="container mt-4 mb-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Manage Staff</h3>
-    <a href="{% url 'add_staff' %}" class="btn btn-primary">Add New Staff</a>
+    <h3>Manage Course</h3>
+    <a href="{% url 'add_course' %}" class="btn btn-primary">Add Course</a>
   </div>
 
   {% if messages %}
@@ -19,22 +19,21 @@
       <table class="table table-bordered table-sm">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Username</th>
-            <th>Address</th>
+            <th>Course</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {% for staff in staffs %}
+          {% for course in courses %}
           <tr>
-            <td>{{ staff.admin.first_name }} {{ staff.admin.last_name }}</td>
-            <td>{{ staff.admin.email }}</td>
-            <td>{{ staff.admin.username }}</td>
-            <td>{{ staff.address }}</td>
+            <td>{{ course.course_name }}</td>
+            <td>
+              <a href="{% url 'edit_course' course.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <a href="{% url 'delete_course' course.id %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
           </tr>
           {% empty %}
-          <tr><td colspan="4">No staff found.</td></tr>
+          <tr><td colspan="2">No course found.</td></tr>
           {% endfor %}
         </tbody>
       </table>

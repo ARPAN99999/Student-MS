@@ -63,11 +63,14 @@
       <a href="{% url 'student_profile' %}">Profile</a>
       <a href="{% url 'student_view_attendance' %}">Attendance</a>
       <a href="{% url 'student_view_result' %}">Results</a>
+      <a href="{% url 'student_feedback' %}">Feedback</a>
+      <a href="{% url 'student_apply_leave' %}">Leave</a>
       <a href="{% url 'logout_user' %}">Logout</a>
     </div>
 
     <div class="card-box">
       <h3 class="page-title">View Attendance</h3>
+      <p class="text-muted">Choose subject and date range to see detailed attendance status.</p>
 
       {% if messages %}
         {% for message in messages %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'hod_template/_hod_ui_shell.html' %}
+<div class="container mt-4 mb-5">
+  <h3>Student Leave Requests</h3>
+
+  <div class="card p-3">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Date</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for leave in leaves %}
+          <tr>
+            <td>{{ leave.student_id.admin.first_name }} {{ leave.student_id.admin.last_name }}</td>
+            <td>{{ leave.leave_date }}</td>
+            <td>{{ leave.leave_message }}</td>
+            <td>{% if leave.leave_status == 0 %}Pending{% elif leave.leave_status == 1 %}Approved{% else %}Rejected{% endif %}</td>
+            <td>
+              <a href="{% url 'student_leave_approve' leave.id %}" class="btn btn-sm btn-success">Approve</a>
+              <a href="{% url 'student_leave_reject' leave.id %}" class="btn btn-sm btn-danger">Reject</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5">No leave request found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock content %}

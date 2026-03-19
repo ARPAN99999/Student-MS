@@ -22,10 +22,13 @@
     text-decoration: none;
     font-weight: 600;
     margin-right: 16px;
+    padding: 8px 10px;
+    border-radius: 8px;
   }
 
   .top-nav a:hover {
     color: #0284c7;
+    background: #e0f2fe;
   }
 
   .card-box {
@@ -54,6 +57,28 @@
     color: #fff;
     opacity: 0.95;
   }
+
+  .summary-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .label-muted {
+    color: #64748b;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 700;
+  }
+
+  .value-strong {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
 </style>
 
 <div class="student-page">
@@ -63,7 +88,26 @@
       <a href="{% url 'student_profile' %}">Profile</a>
       <a href="{% url 'student_view_attendance' %}">Attendance</a>
       <a href="{% url 'student_view_result' %}">Results</a>
+      <a href="{% url 'student_feedback' %}">Feedback</a>
+      <a href="{% url 'student_apply_leave' %}">Leave</a>
       <a href="{% url 'logout_user' %}">Logout</a>
+    </div>
+
+    <div class="summary-card">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="label-muted">Username</div>
+          <div class="value-strong">{{ user.username }}</div>
+        </div>
+        <div class="col-md-4">
+          <div class="label-muted">Course</div>
+          <div class="value-strong">{{ student.course_id.course_name|default:"Not Assigned" }}</div>
+        </div>
+        <div class="col-md-4">
+          <div class="label-muted">Session</div>
+          <div class="value-strong">{{ student.session_year_id.session_start_year|default:"-" }} - {{ student.session_year_id.session_end_year|default:"-" }}</div>
+        </div>
+      </div>
     </div>
 
     <div class="card-box">

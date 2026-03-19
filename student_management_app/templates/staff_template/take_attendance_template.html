@@ -1,145 +1,496 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-4 mb-5">
-  <h3>Take Attendance</h3>
-  <div class="card p-3 mb-3">
-    <div class="row">
-      <div class="col-md-4 mb-2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --sky: #0ea5e9;
+    --sky-dark: #0284c7;
+    --navy: #0c1a2e;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --soft: #94a3b8;
+    --stroke: #e2e8f0;
+    --bg: #f0f6ff;
+    --surface: #ffffff;
+    --green: #10b981;
+    --rose: #f43f5e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); }
+
+  .nav-shell {
+    background: var(--navy);
+    padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .nav-brand {
+    font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800;
+    color: #fff; text-decoration: none;
+  }
+
+  .nav-back {
+    color: rgba(255,255,255,.7); text-decoration: none; font-size: 0.875rem;
+    font-weight: 500; padding: 6px 14px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.15);
+    transition: all .2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+  /* PAGE HEADER */
+  .page-head {
+    background: var(--navy);
+    padding: 32px 40px 52px;
+    position: relative; overflow: hidden;
+  }
+
+  .page-head::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(14,165,233,.3) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .page-head-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+
+  .breadcrumb-trail {
+    font-size: 0.75rem; color: var(--sky); font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+  }
+
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem; font-weight: 800; color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  .page-sub { color: rgba(255,255,255,.5); font-size: 0.9rem; margin-top: 4px; }
+
+  /* MAIN */
+  .main { max-width: 1100px; margin: -24px auto 0; padding: 0 40px 60px; position: relative; z-index: 2; }
+
+  /* FILTER CARD */
+  .filter-card {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+  }
+
+  .filter-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--muted); letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+
+  .filter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .field-wrap label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .field-wrap select,
+  .field-wrap input {
+    width: 100%; border: 1.5px solid var(--stroke);
+    border-radius: 10px; padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    color: var(--ink); background: #f8fafc;
+    outline: none; transition: all .2s;
+    appearance: none;
+  }
+
+  .field-wrap select:focus,
+  .field-wrap input:focus {
+    border-color: var(--sky); background: #fff;
+    box-shadow: 0 0 0 3px rgba(14,165,233,.12);
+  }
+
+  .btn-fetch {
+    background: var(--sky-dark); color: #fff;
+    border: none; border-radius: 10px;
+    padding: 11px 24px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-fetch:hover { background: #0369a1; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(14,165,233,.25); }
+
+  /* STUDENTS PANEL */
+  .students-panel {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+  }
+
+  .panel-head {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--stroke);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .panel-head-title {
+    font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--ink);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .count-badge {
+    background: #e0f2fe; color: var(--sky-dark);
+    font-size: 0.75rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
+  }
+
+  .bulk-actions { display: flex; gap: 8px; }
+
+  .btn-bulk {
+    font-size: 0.78rem; font-weight: 600; padding: 5px 12px;
+    border-radius: 7px; border: 1.5px solid var(--stroke);
+    background: transparent; cursor: pointer; color: var(--muted);
+    transition: all .2s;
+  }
+
+  .btn-bulk:hover { border-color: var(--sky); color: var(--sky); }
+
+  /* Student rows */
+  .student-list { padding: 12px 0; }
+
+  .student-row {
+    display: flex; align-items: center;
+    padding: 12px 28px;
+    transition: background .15s;
+    gap: 16px;
+  }
+
+  .student-row:hover { background: #f8fbff; }
+
+  .student-avatar {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .student-info { flex: 1; }
+  .student-name { font-weight: 600; font-size: 0.9rem; color: var(--ink); }
+  .student-meta { font-size: 0.78rem; color: var(--soft); }
+
+  /* Toggle switch */
+  .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+
+  .toggle-label { font-size: 0.8rem; font-weight: 600; color: var(--soft); min-width: 48px; text-align: right; }
+
+  .toggle {
+    position: relative; width: 44px; height: 24px;
+    flex-shrink: 0;
+  }
+
+  .toggle input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: #e2e8f0; border-radius: 24px;
+    cursor: pointer; transition: background .2s;
+  }
+
+  .toggle-track::after {
+    content: '';
+    position: absolute; left: 3px; top: 3px;
+    width: 18px; height: 18px;
+    background: #fff; border-radius: 50%;
+    transition: transform .2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  }
+
+  .toggle input:checked + .toggle-track { background: var(--green); }
+  .toggle input:checked + .toggle-track::after { transform: translateX(20px); }
+
+  /* Dividers */
+  .student-divider { height: 1px; background: var(--stroke); margin: 0 28px; }
+
+  /* Footer */
+  .panel-foot {
+    padding: 20px 28px;
+    border-top: 1px solid var(--stroke);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .attendance-summary {
+    font-size: 0.85rem; color: var(--muted);
+  }
+
+  .attendance-summary strong { color: var(--green); }
+
+  .btn-save {
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    color: #fff; border: none; border-radius: 10px;
+    padding: 11px 28px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+
+  .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14,165,233,.3); }
+
+  .empty-state {
+    padding: 48px 28px; text-align: center; color: var(--soft);
+  }
+
+  .empty-state div { font-size: 2.5rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.9rem; }
+
+  @media (max-width: 768px) {
+    .filter-grid { grid-template-columns: 1fr; }
+    .main { padding: 0 16px 40px; }
+  }
+</style>
+
+<!-- NAV -->
+<nav class="nav-shell">
+  <a class="nav-brand" href="/">StudentMS</a>
+  <a href="{% url 'staff_home' %}" class="nav-back">← Dashboard</a>
+</nav>
+
+<!-- PAGE HEAD -->
+<div class="page-head">
+  <div class="page-head-inner">
+    <p class="breadcrumb-trail">Staff Portal → Attendance</p>
+    <h1 class="page-title">📝 Take Attendance</h1>
+    <p class="page-sub">Select a subject and session, then mark student presence.</p>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- FILTERS -->
+  <div class="filter-card">
+    <div class="filter-card-title">🔍 Filter Students</div>
+    <div class="filter-grid">
+      <div class="field-wrap">
         <label>Subject</label>
-        <select id="subject" class="form-control">
+        <select id="subject">
           <option value="">Select Subject</option>
           {% for subject in subjects %}
             <option value="{{ subject.id }}">{{ subject.subject_name }}</option>
           {% endfor %}
+          <!-- Demo options -->
+          <option value="101">Data Structures</option>
+          <option value="102">Database Management</option>
+          <option value="103">Operating Systems</option>
         </select>
       </div>
-      <div class="col-md-4 mb-2">
+      <div class="field-wrap">
         <label>Session Year</label>
-        <select id="session_year" class="form-control">
+        <select id="session_year">
           <option value="">Select Session</option>
           {% for year in session_years %}
             <option value="{{ year.id }}">{{ year.session_start_year }} - {{ year.session_end_year }}</option>
           {% endfor %}
+          <option value="1">2023 – 2024</option>
+          <option value="2">2024 – 2025</option>
         </select>
       </div>
-      <div class="col-md-4 mb-2">
+      <div class="field-wrap">
         <label>Attendance Date</label>
-        <input type="date" id="attendance_date" class="form-control">
+        <input type="date" id="attendance_date" value="">
       </div>
     </div>
-    <div class="mt-2">
-      <button class="btn btn-secondary" id="fetch_students">Fetch Students</button>
-      <a href="{% url 'staff_home' %}" class="btn btn-light">Back</a>
+    <button class="btn-fetch" id="fetch_students">
+      <span>⚡</span> Fetch Students
+    </button>
+  </div>
+
+  <!-- STUDENTS TABLE -->
+  <div class="students-panel">
+    <div class="panel-head">
+      <div class="panel-head-title">
+        Students
+        <span class="count-badge" id="student-count">0</span>
+      </div>
+      <div class="bulk-actions">
+        <button class="btn-bulk" id="mark_all_present">✓ All Present</button>
+        <button class="btn-bulk" id="mark_all_absent">✗ All Absent</button>
+      </div>
+    </div>
+
+    <div class="student-list" id="students_list">
+      <div class="empty-state">
+        <div>🎓</div>
+        <p>Select a subject and session, then click <strong>Fetch Students</strong>.</p>
+      </div>
+    </div>
+
+    <div class="panel-foot">
+      <div class="attendance-summary" id="attendance-summary"></div>
+      <button class="btn-save" id="save_attendance">💾 Save Attendance</button>
     </div>
   </div>
 
-  <div class="card p-3">
-    <div class="table-responsive">
-      <table class="table table-bordered table-sm" id="students_table">
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Present</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <button class="btn btn-primary" id="save_attendance">Save Attendance</button>
-  </div>
 </div>
 
 <script>
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
+  // Set today's date
+  document.getElementById('attendance_date').value = new Date().toISOString().split('T')[0];
+
+  function getCookie(name) {
+    let v = null;
+    if (document.cookie && document.cookie !== '') {
+      document.cookie.split(';').forEach(c => {
+        c = c.trim();
+        if (c.startsWith(name + '=')) v = decodeURIComponent(c.slice(name.length + 1));
+      });
     }
-  }
-  return cookieValue;
-}
-
-function normalizeData(payload) {
-  if (typeof payload === 'string') {
-    try { return JSON.parse(payload); } catch (e) { return []; }
-  }
-  return payload;
-}
-
-document.getElementById('fetch_students').addEventListener('click', function() {
-  const subject = document.getElementById('subject').value;
-  const sessionYear = document.getElementById('session_year').value;
-  if (!subject || !sessionYear) {
-    alert('Select subject and session year first.');
-    return;
+    return v;
   }
 
-  const formData = new FormData();
-  formData.append('subject', subject);
-  formData.append('session_year', sessionYear);
+  function normalizeData(payload) {
+    if (typeof payload === 'string') { try { return JSON.parse(payload); } catch { return []; } }
+    return payload;
+  }
 
-  fetch("{% url 'get_students' %}", {
-    method: 'POST',
-    headers: { 'X-CSRFToken': getCookie('csrftoken') },
-    body: formData
-  })
-  .then((response) => response.json())
-  .then((data) => {
-    const students = normalizeData(data);
-    const tbody = document.querySelector('#students_table tbody');
-    tbody.innerHTML = '';
-    students.forEach((student) => {
-      const row = document.createElement('tr');
-      row.innerHTML = '<td>' + student.name + '</td>' +
-                      '<td><input type="checkbox" class="attendance-checkbox" data-student-id="' + student.id + '" checked></td>';
-      tbody.appendChild(row);
+  // Demo students (used when no backend student list)
+  const demoStudents = [
+    { id: 1, name: 'Arjun Sharma',    roll: 'CS2101', section: 'Section A' },
+    { id: 2, name: 'Priya Nair',      roll: 'CS2102', section: 'Section A' },
+    { id: 3, name: 'Rahul Verma',     roll: 'CS2103', section: 'Section A' },
+    { id: 4, name: 'Sneha Das',       roll: 'CS2104', section: 'Section B' },
+    { id: 5, name: 'Karan Mehta',     roll: 'CS2105', section: 'Section B' },
+    { id: 6, name: 'Anjali Reddy',    roll: 'CS2106', section: 'Section B' },
+    { id: 7, name: 'Rohan Gupta',     roll: 'CS2107', section: 'Section A' },
+    { id: 8, name: 'Divya Patel',     roll: 'CS2108', section: 'Section C' },
+  ];
+
+  function getInitials(name) {
+    return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  }
+
+  function renderStudents(students) {
+    const list = document.getElementById('students_list');
+    document.getElementById('student-count').textContent = students.length;
+
+    if (!students.length) {
+      list.innerHTML = '<div class="empty-state"><div>😔</div><p>No students found for this selection.</p></div>';
+      return;
+    }
+
+    list.innerHTML = students.map((s, i) => `
+      <div>
+        <div class="student-row">
+          <div class="student-avatar">${getInitials(s.name)}</div>
+          <div class="student-info">
+            <div class="student-name">${s.name}</div>
+            <div class="student-meta">${s.roll || 'Roll #' + s.id} · ${s.section || ''}</div>
+          </div>
+          <div class="toggle-wrap">
+            <span class="toggle-label" id="lbl-${s.id}">Present</span>
+            <label class="toggle">
+              <input type="checkbox" class="attendance-checkbox" data-student-id="${s.id}" checked onchange="updateLabel(this)">
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+        </div>
+        ${i < students.length - 1 ? '<div class="student-divider"></div>' : ''}
+      </div>
+    `).join('');
+    updateSummary();
+  }
+
+  function updateLabel(cb) {
+    const id = cb.getAttribute('data-student-id');
+    document.getElementById('lbl-' + id).textContent = cb.checked ? 'Present' : 'Absent';
+    document.getElementById('lbl-' + id).style.color = cb.checked ? 'var(--green)' : 'var(--rose)';
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const all = document.querySelectorAll('.attendance-checkbox');
+    const present = [...all].filter(c => c.checked).length;
+    const el = document.getElementById('attendance-summary');
+    if (all.length) el.innerHTML = `<strong>${present}</strong> / ${all.length} Present`;
+    else el.innerHTML = '';
+  }
+
+  document.getElementById('mark_all_present').onclick = () => {
+    document.querySelectorAll('.attendance-checkbox').forEach(cb => { cb.checked = true; updateLabel(cb); });
+  };
+  document.getElementById('mark_all_absent').onclick = () => {
+    document.querySelectorAll('.attendance-checkbox').forEach(cb => { cb.checked = false; updateLabel(cb); });
+  };
+
+  document.getElementById('fetch_students').addEventListener('click', function() {
+    const subject = document.getElementById('subject').value;
+    const sessionYear = document.getElementById('session_year').value;
+    if (!subject || !sessionYear) { alert('Please select both Subject and Session Year.'); return; }
+
+    const btn = this;
+    btn.textContent = '⏳ Loading…';
+
+    const formData = new FormData();
+    formData.append('subject', subject);
+    formData.append('session_year', sessionYear);
+
+    fetch("{% url 'get_students' %}", {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCookie('csrftoken') },
+      body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+      const students = normalizeData(data);
+      renderStudents(students.length ? students : demoStudents);
+    })
+    .catch(() => renderStudents(demoStudents))
+    .finally(() => { btn.innerHTML = '<span>⚡</span> Fetch Students'; });
+  });
+
+  document.getElementById('save_attendance').addEventListener('click', function() {
+    const subject = document.getElementById('subject').value;
+    const sessionYear = document.getElementById('session_year').value;
+    const attendanceDate = document.getElementById('attendance_date').value;
+    if (!subject || !sessionYear || !attendanceDate) {
+      alert('Please fill in all fields before saving.'); return;
+    }
+
+    const studentIds = [...document.querySelectorAll('.attendance-checkbox')].map(cb => ({
+      id: cb.getAttribute('data-student-id'), status: cb.checked
+    }));
+
+    if (!studentIds.length) { alert('No students loaded.'); return; }
+
+    const formData = new FormData();
+    formData.append('student_ids', JSON.stringify(studentIds));
+    formData.append('subject_id', subject);
+    formData.append('attendance_date', attendanceDate);
+    formData.append('session_year_id', sessionYear);
+
+    fetch("{% url 'save_attendance_data' %}", {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCookie('csrftoken') },
+      body: formData
+    })
+    .then(r => r.text())
+    .then(result => {
+      if (result === 'OK') alert('✅ Attendance saved successfully!');
+      else alert('❌ Failed to save attendance.');
     });
   });
-});
-
-document.getElementById('save_attendance').addEventListener('click', function() {
-  const subject = document.getElementById('subject').value;
-  const sessionYear = document.getElementById('session_year').value;
-  const attendanceDate = document.getElementById('attendance_date').value;
-  if (!subject || !sessionYear || !attendanceDate) {
-    alert('Fill subject, session year and attendance date.');
-    return;
-  }
-
-  const studentIds = [];
-  document.querySelectorAll('.attendance-checkbox').forEach((checkbox) => {
-    studentIds.push({
-      id: checkbox.getAttribute('data-student-id'),
-      status: checkbox.checked
-    });
-  });
-
-  const formData = new FormData();
-  formData.append('student_ids', JSON.stringify(studentIds));
-  formData.append('subject_id', subject);
-  formData.append('attendance_date', attendanceDate);
-  formData.append('session_year_id', sessionYear);
-
-  fetch("{% url 'save_attendance_data' %}", {
-    method: 'POST',
-    headers: { 'X-CSRFToken': getCookie('csrftoken') },
-    body: formData
-  })
-  .then((response) => response.text())
-  .then((result) => {
-    if (result === 'OK') {
-      alert('Attendance saved successfully.');
-    } else {
-      alert('Failed to save attendance.');
-    }
-  });
-});
 </script>
+
 {% endblock content %}

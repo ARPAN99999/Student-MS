@@ -22,10 +22,13 @@
     text-decoration: none;
     font-weight: 600;
     margin-right: 16px;
+    padding: 8px 10px;
+    border-radius: 8px;
   }
 
   .top-nav a:hover {
     color: #0284c7;
+    background: #e0f2fe;
   }
 
   .card-box {
@@ -41,6 +44,28 @@
     color: #0f172a;
     margin-bottom: 16px;
   }
+
+  .summary-strip {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .summary-label {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .summary-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
 </style>
 
 <div class="student-page">
@@ -50,8 +75,33 @@
       <a href="{% url 'student_profile' %}">Profile</a>
       <a href="{% url 'student_view_attendance' %}">Attendance</a>
       <a href="{% url 'student_view_result' %}">Results</a>
+      <a href="{% url 'student_feedback' %}">Feedback</a>
+      <a href="{% url 'student_apply_leave' %}">Leave</a>
       <a href="{% url 'logout_user' %}">Logout</a>
     </div>
+
+    {% if student_result %}
+    <div class="summary-strip">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="summary-label">Subjects</div>
+          <div class="summary-value">{{ student_result|length }}</div>
+        </div>
+        <div class="col-md-4">
+          <div class="summary-label">Highest Total</div>
+          <div class="summary-value">
+            {% with top=student_result|first %}
+              {{ top.subject_exam_marks|add:top.subject_assignment_marks }}
+            {% endwith %}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="summary-label">Status</div>
+          <div class="summary-value" style="font-size: 1.05rem; margin-top: 4px;">Published</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 
     <div class="card-box">
       <h3 class="page-title">My Results</h3>

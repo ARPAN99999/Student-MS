@@ -4,8 +4,8 @@
 {% include 'hod_template/_hod_ui_shell.html' %}
 <div class="container mt-4 mb-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Manage Staff</h3>
-    <a href="{% url 'add_staff' %}" class="btn btn-primary">Add New Staff</a>
+    <h3>Manage Session</h3>
+    <a href="{% url 'add_session' %}" class="btn btn-primary">Add Session</a>
   </div>
 
   {% if messages %}
@@ -19,22 +19,21 @@
       <table class="table table-bordered table-sm">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Username</th>
-            <th>Address</th>
+            <th>Session Year</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {% for staff in staffs %}
+          {% for session in session_years %}
           <tr>
-            <td>{{ staff.admin.first_name }} {{ staff.admin.last_name }}</td>
-            <td>{{ staff.admin.email }}</td>
-            <td>{{ staff.admin.username }}</td>
-            <td>{{ staff.address }}</td>
+            <td>{{ session.session_start_year }} - {{ session.session_end_year }}</td>
+            <td>
+              <a href="{% url 'edit_session' session.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <a href="{% url 'delete_session' session.id %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
           </tr>
           {% empty %}
-          <tr><td colspan="4">No staff found.</td></tr>
+          <tr><td colspan="2">No session found.</td></tr>
           {% endfor %}
         </tbody>
       </table>

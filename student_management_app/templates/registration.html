@@ -3,180 +3,529 @@
 
 {% block content %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 
 <style>
-   :root {
-      --bg: #eef3f7;
-      --ink: #102329;
-      --muted: #59717a;
-      --line: #cfdee4;
-      --primary: #0f7a7d;
-      --surface: rgba(255, 255, 255, 0.88);
-   }
+  :root {
+    --navy: #0c1a2e;
+    --sky: #38bdf8;
+    --sky-dark: #0ea5e9;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --soft: #94a3b8;
+    --stroke: #e2e8f0;
+    --bg: #f0f6ff;
+    --surface: #ffffff;
+    --green: #10b981;
+    --rose: #f43f5e;
+  }
 
-   body {
-      font-family: 'Manrope', 'Segoe UI', sans-serif;
-      background:
-         radial-gradient(circle at 12% 10%, rgba(15, 122, 125, 0.16), transparent 34%),
-         radial-gradient(circle at 88% 22%, rgba(255, 138, 61, 0.22), transparent 28%),
-         var(--bg);
-      color: var(--ink);
-   }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-   .auth-nav {
-      background: rgba(255, 255, 255, 0.82);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(8px);
-   }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
 
-   .auth-brand {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      color: var(--ink) !important;
-   }
+  /* NAV */
+  .top-nav {
+    background: var(--navy);
+    height: 60px; padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
 
-   .register-wrap {
-      min-height: calc(100vh - 70px);
-      display: grid;
-      place-items: center;
-      padding: 24px 16px 40px;
-   }
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px; text-decoration: none;
+  }
 
-   .register-card {
-      width: 100%;
-      max-width: 620px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      box-shadow: 0 20px 44px rgba(16, 35, 41, 0.14);
-      padding: 30px;
-   }
+  .brand-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: #fff;
+  }
 
-   .register-title {
-      font-family: 'Space Grotesk', sans-serif;
-      margin-bottom: 8px;
-   }
+  .brand-text { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; }
 
-   .register-subtitle {
-      color: var(--muted);
-      margin-bottom: 20px;
-   }
+  .nav-right { display: flex; align-items: center; gap: 8px; }
 
-   .form-control {
-      border: 1px solid #c8d8de;
-      border-radius: 12px;
-      padding: 10px 12px;
-      height: 46px;
-   }
+  .nav-link {
+    color: rgba(255,255,255,.65); text-decoration: none; font-size: 0.875rem;
+    font-weight: 500; padding: 6px 14px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.12); transition: all .2s;
+  }
+  .nav-link:hover { background: rgba(255,255,255,.08); color: #fff; }
 
-   .form-control:focus {
-      border-color: #83b9c2;
-      box-shadow: 0 0 0 0.2rem rgba(15, 122, 125, 0.14);
-   }
+  /* PAGE LAYOUT */
+  .page-wrap {
+    max-width: 1100px; margin: 0 auto;
+    padding: 48px 24px 60px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    align-items: start;
+  }
 
-   .btn-register {
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(140deg, var(--primary), #0b686b);
-      color: #fff;
-      font-weight: 700;
-      width: 100%;
-      padding: 11px;
-      box-shadow: 0 10px 24px rgba(15, 122, 125, 0.24);
-   }
+  /* ── REGISTER FORM ── */
+  .register-card {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,.06);
+  }
 
-   .btn-register:hover {
-      color: #fff;
-   }
+  .card-top {
+    background: var(--navy);
+    padding: 32px 36px;
+    position: relative; overflow: hidden;
+  }
 
-   .helper {
-      margin-top: 14px;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-   }
+  .card-top::before {
+    content: '';
+    position: absolute; top: -60px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(56,189,248,.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
 
-   .helper a {
-      color: #28545f;
-      text-decoration: none;
-      font-size: 0.92rem;
-   }
+  .card-top-inner { position: relative; z-index: 1; }
 
-   .helper a:hover {
-      text-decoration: underline;
-   }
+  .step-indicator {
+    display: flex; gap: 6px; margin-bottom: 16px;
+  }
+
+  .step-dot {
+    height: 4px; border-radius: 4px; background: rgba(255,255,255,.2);
+  }
+
+  .step-dot.active { background: var(--sky); flex: 2; }
+  .step-dot { flex: 1; }
+
+  .card-top-eyebrow {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--sky); margin-bottom: 8px;
+  }
+
+  .card-top-title {
+    font-family: 'Syne', sans-serif; font-size: 1.7rem; font-weight: 700;
+    color: #fff; letter-spacing: 0px; margin-bottom: 4px;
+  }
+
+  .card-top-sub { color: rgba(255,255,255,.5); font-size: 0.88rem; }
+
+  .card-body { padding: 32px 36px; }
+
+  .alert-box {
+    background: #fff5f5; border: 1.5px solid #fecdd3;
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 0.85rem; color: #be123c; font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  /* Section dividers */
+  .section-divider {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--soft);
+    margin: 0 0 16px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--stroke);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* Fields */
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .field-full { margin-bottom: 14px; }
+
+  .field label {
+    display: block; font-size: 0.78rem; font-weight: 600;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+  }
+
+  .input-wrap { position: relative; }
+
+  .input-icon {
+    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    font-size: 0.95rem; color: var(--soft);
+  }
+
+  .field input {
+    width: 100%; border: 1.5px solid var(--stroke); border-radius: 11px;
+    padding: 10px 14px 10px 40px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    color: var(--ink); background: #f8fafc; outline: none; transition: all .2s;
+  }
+
+  .field input:focus {
+    border-color: var(--sky); background: #fff;
+    box-shadow: 0 0 0 3px rgba(14,165,233,.1);
+  }
+
+  .field input.valid   { border-color: var(--green); }
+  .field input.invalid { border-color: var(--rose); }
+
+  .field-hint { font-size: 0.75rem; color: var(--soft); margin-top: 5px; }
+
+  /* Password strength */
+  .strength-row { display: flex; gap: 3px; margin-top: 7px; }
+  .str-seg { height: 3px; flex: 1; border-radius: 3px; background: var(--stroke); transition: background .3s; }
+  .str-seg.weak   { background: var(--rose); }
+  .str-seg.med    { background: #f59e0b; }
+  .str-seg.strong { background: var(--green); }
+  .str-text { font-size: 0.72rem; margin-top: 4px; font-weight: 600; }
+
+  .pwd-toggle-btn {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--soft); font-size: 0.95rem;
+  }
+
+  /* Terms */
+  .terms-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin: 20px 0 24px; font-size: 0.82rem; color: var(--muted); line-height: 1.5;
+  }
+
+  .terms-row input { width: 15px; height: 15px; margin-top: 2px; accent-color: var(--sky-dark); flex-shrink: 0; }
+  .terms-row a { color: var(--sky-dark); text-decoration: none; font-weight: 600; }
+  .terms-row a:hover { text-decoration: underline; }
+
+  /* Submit */
+  .btn-register {
+    width: 100%; border: none; border-radius: 11px;
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; font-weight: 700; padding: 13px;
+    cursor: pointer; transition: all .25s;
+    box-shadow: 0 6px 20px rgba(14,165,233,.3);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .btn-register:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(14,165,233,.38); }
+
+  .login-link {
+    text-align: center; font-size: 0.85rem; color: var(--muted);
+  }
+
+  .login-link a { color: var(--sky-dark); font-weight: 700; text-decoration: none; }
+  .login-link a:hover { text-decoration: underline; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+  .info-panel {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 16px; padding: 22px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.04);
+  }
+
+  .info-panel-title {
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+    color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;
+  }
+
+  .perk-item {
+    display: flex; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--stroke);
+  }
+
+  .perk-item:last-child { border-bottom: none; }
+
+  .perk-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .perk-icon.blue  { background: #e0f2fe; }
+  .perk-icon.green { background: #d1fae5; }
+  .perk-icon.amber { background: #fef3c7; }
+
+  .perk-text strong { display: block; font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+  .perk-text span   { font-size: 0.78rem; color: var(--soft); }
+
+  /* Testimonial */
+  .testi-panel {
+    background: var(--navy);
+    border-radius: 16px; padding: 24px;
+    position: relative; overflow: hidden;
+  }
+
+  .testi-panel::before {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(14,165,233,.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .testi-quote {
+    font-size: 0.92rem; color: rgba(255,255,255,.75);
+    line-height: 1.65; font-style: italic; margin-bottom: 16px;
+    position: relative; z-index: 1;
+  }
+
+  .testi-quote::before { content: '"'; font-size: 2.5rem; color: var(--sky); line-height: 0; vertical-align: -10px; margin-right: 4px; }
+
+  .testi-author {
+    display: flex; align-items: center; gap: 10px;
+    position: relative; z-index: 1;
+  }
+
+  .testi-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 0.8rem;
+  }
+
+  .testi-name { font-size: 0.85rem; font-weight: 700; color: #fff; }
+  .testi-role { font-size: 0.75rem; color: rgba(255,255,255,.45); }
+
+  .stars { color: #f59e0b; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .register-card { animation: slideUp .5s ease both; }
+  .sidebar { animation: slideUp .5s .1s ease both; }
+
+  @media (max-width: 900px) {
+    .page-wrap { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; }
+    .card-body { padding: 24px 20px; }
+    .card-top  { padding: 24px 20px; }
+  }
 </style>
 
-<nav class="navbar navbar-expand-lg auth-nav">
-   <div class="container">
-      <a class="navbar-brand auth-brand" href="/">StudentMS</a>
-      <div class="ml-auto d-flex" style="gap: 8px;">
-         <a href="/login" class="btn btn-outline-secondary btn-sm">Login</a>
-         <a href="/contact" class="btn btn-outline-secondary btn-sm">Contact</a>
-      </div>
-   </div>
+<!-- NAV -->
+<nav class="top-nav">
+  <a href="/" class="nav-brand">
+    <div class="brand-icon">S</div>
+    <span class="brand-text">StudentMS</span>
+  </a>
+  <div class="nav-right">
+    <a href="{% url 'login' %}" class="nav-link">Login</a>
+    <a href="{% url 'contact' %}" class="nav-link">Contact</a>
+  </div>
 </nav>
 
-<section class="register-wrap">
-   <div class="register-card">
-      <h2 class="register-title">Create Your Account</h2>
-      <p class="register-subtitle">Register as student, staff, or HOD using your institutional email format.</p>
+<div class="page-wrap">
+
+  <!-- REGISTER FORM -->
+  <div class="register-card">
+    <div class="card-top">
+      <div class="card-top-inner">
+        <div class="step-indicator">
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+        <p class="card-top-eyebrow">New Account</p>
+        <h2 class="card-top-title">Create Your Account</h2>
+        <p class="card-top-sub">Join thousands of educators and students on StudentMS.</p>
+      </div>
+    </div>
+
+    <div class="card-body">
 
       {% if messages %}
-      <div class="mb-3">
-         {% for message in messages %}
-         <div class="alert alert-danger py-2 mb-2" role="alert">{{ message }}</div>
-         {% endfor %}
-      </div>
+        {% for message in messages %}
+          <div class="alert-box">⚠️ {{ message }}</div>
+        {% endfor %}
       {% endif %}
 
       <form action="{% url 'doRegistration' %}" method="get">
-         {% csrf_token %}
-         <div class="row">
-            <div class="col-md-6">
-               <div class="form-group mb-3">
-                  <label for="firstName" class="font-weight-bold">First Name</label>
-                  <input id="firstName" class="form-control" type="text" name="first_name" placeholder="First name" required>
-               </div>
-            </div>
-            <div class="col-md-6">
-               <div class="form-group mb-3">
-                  <label for="lastName" class="font-weight-bold">Last Name</label>
-                  <input id="lastName" class="form-control" type="text" name="last_name" placeholder="Last name" required>
-               </div>
-            </div>
-         </div>
+        {% csrf_token %}
 
-         <div class="form-group mb-3">
-            <label for="email" class="font-weight-bold">Email</label>
-            <input id="email" class="form-control" type="email" name="email" placeholder="name.student@college.com" required>
-         </div>
+        <div class="section-divider">👤 Personal Details</div>
 
-         <div class="row">
-            <div class="col-md-6">
-               <div class="form-group mb-3">
-                  <label for="password" class="font-weight-bold">Password</label>
-                  <input id="password" class="form-control" type="password" name="password" placeholder="Create password" required>
-               </div>
+        <div class="field-row">
+          <div class="field">
+            <label>First Name</label>
+            <div class="input-wrap">
+              <span class="input-icon">✏️</span>
+              <input type="text" name="first_name" placeholder="First name" required autocomplete="given-name" oninput="validateName(this)">
             </div>
-            <div class="col-md-6">
-               <div class="form-group mb-3">
-                  <label for="confirmPassword" class="font-weight-bold">Confirm Password</label>
-                  <input id="confirmPassword" class="form-control" type="password" name="confirmPassword" placeholder="Confirm password" required>
-               </div>
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <div class="input-wrap">
+              <span class="input-icon">✏️</span>
+              <input type="text" name="last_name" placeholder="Last name" required autocomplete="family-name" oninput="validateName(this)">
             </div>
-         </div>
+          </div>
+        </div>
 
-         <button class="btn btn-register" type="submit">Create Account</button>
+        <div class="field-full field">
+          <label>Institutional Email</label>
+          <div class="input-wrap">
+            <span class="input-icon">📧</span>
+            <input type="email" name="email" placeholder="name@institution.edu" required autocomplete="email" oninput="validateEmail(this)">
+          </div>
+          <div class="field-hint">Use your official institution email address.</div>
+        </div>
+
+        <div class="section-divider" style="margin-top:24px;">🔒 Security</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">🔑</span>
+              <input type="password" name="password" id="pwd1" placeholder="Create password" required oninput="checkStrength(this.value); matchPwd()">
+              <button type="button" class="pwd-toggle-btn" onclick="togglePwd('pwd1')">👁</button>
+            </div>
+            <div class="strength-row">
+              <div class="str-seg" id="s1"></div>
+              <div class="str-seg" id="s2"></div>
+              <div class="str-seg" id="s3"></div>
+              <div class="str-seg" id="s4"></div>
+            </div>
+            <div class="str-text" id="str-text" style="color:var(--soft);"></div>
+          </div>
+          <div class="field">
+            <label>Confirm Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">🔑</span>
+              <input type="password" name="confirmPassword" id="pwd2" placeholder="Confirm password" required oninput="matchPwd()">
+              <button type="button" class="pwd-toggle-btn" onclick="togglePwd('pwd2')">👁</button>
+            </div>
+            <div class="field-hint" id="match-hint"></div>
+          </div>
+        </div>
+
+        <label class="terms-row">
+          <input type="checkbox" required>
+          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> of StudentMS.
+        </label>
+
+        <button type="submit" class="btn-register">
+          Create Account →
+        </button>
+
+        <p class="login-link">Already registered? <a href="{% url 'login' %}">Sign in instead</a></p>
       </form>
+    </div>
+  </div>
 
-      <div class="helper">
-         <a href="/login">Already registered? Login</a>
-         <a href="/">Back to home</a>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="info-panel">
+      <div class="info-panel-title">✨ What you get</div>
+      <div class="perk-item">
+        <div class="perk-icon blue">📋</div>
+        <div class="perk-text">
+          <strong>Attendance Tracking</strong>
+          <span>Digital registers, real-time records</span>
+        </div>
       </div>
-   </div>
-</section>
+      <div class="perk-item">
+        <div class="perk-icon green">📊</div>
+        <div class="perk-text">
+          <strong>Result Management</strong>
+          <span>Auto GPA, instant report cards</span>
+        </div>
+      </div>
+      <div class="perk-item">
+        <div class="perk-icon amber">🔔</div>
+        <div class="perk-text">
+          <strong>Smart Notifications</strong>
+          <span>Alerts for exams, absences & more</span>
+        </div>
+      </div>
+      <div class="perk-item">
+        <div class="perk-icon blue">🔒</div>
+        <div class="perk-text">
+          <strong>Secure & Private</strong>
+          <span>AES-256 encryption, GDPR ready</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-panel">
+      <div class="stars">★★★★★</div>
+      <p class="testi-quote">StudentMS transformed how our school handles attendance and results. Setup took under 10 minutes and the whole staff was on board by day one.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">RK</div>
+        <div>
+          <div class="testi-name">Rakibul Karim</div>
+          <div class="testi-role">Principal, Dhaka Model School</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--stroke);border-radius:14px;padding:18px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.04);">
+      <div style="font-size:1.6rem;margin-bottom:8px;">🎓</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink);margin-bottom:4px;">Trusted by 500+ institutions</div>
+      <div style="font-size:0.8rem;color:var(--soft);">Join 200,000+ students already using StudentMS</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function togglePwd(id) {
+    const f = document.getElementById(id);
+    f.type = f.type === 'password' ? 'text' : 'password';
+  }
+
+  function checkStrength(val) {
+    const segs = ['s1','s2','s3','s4'].map(id => document.getElementById(id));
+    const txt = document.getElementById('str-text');
+    segs.forEach(s => s.className = 'str-seg');
+    if (!val) { txt.textContent = ''; return; }
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const cls = ['','weak','med','med','strong'];
+    const lbls = ['','Weak','Fair','Good','Strong ✓'];
+    const cols = ['','#f43f5e','#f59e0b','#f59e0b','#10b981'];
+    for (let i = 0; i < score; i++) segs[i].classList.add(cls[score]);
+    txt.textContent = lbls[score];
+    txt.style.color = cols[score];
+  }
+
+  function matchPwd() {
+    const p1 = document.getElementById('pwd1').value;
+    const p2 = document.getElementById('pwd2').value;
+    const hint = document.getElementById('match-hint');
+    if (!p2) { hint.textContent = ''; return; }
+    if (p1 === p2) {
+      hint.textContent = '✓ Passwords match';
+      hint.style.color = '#10b981';
+      document.getElementById('pwd2').classList.remove('invalid');
+      document.getElementById('pwd2').classList.add('valid');
+    } else {
+      hint.textContent = '✗ Passwords do not match';
+      hint.style.color = '#f43f5e';
+      document.getElementById('pwd2').classList.add('invalid');
+      document.getElementById('pwd2').classList.remove('valid');
+    }
+  }
+
+  function validateEmail(el) {
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
+    el.classList.toggle('valid', valid);
+    el.classList.toggle('invalid', !valid && el.value.length > 4);
+  }
+
+  function validateName(el) {
+    const valid = el.value.trim().length >= 2;
+    el.classList.toggle('valid', valid);
+    el.classList.toggle('invalid', !valid && el.value.length > 0);
+  }
+</script>
+
 {% endblock content %}

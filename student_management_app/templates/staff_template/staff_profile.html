@@ -1,42 +1,393 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-4 mb-5">
-  <h3>Staff Profile</h3>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --sky: #0ea5e9;
+    --sky-dark: #0284c7;
+    --navy: #0c1a2e;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --soft: #94a3b8;
+    --stroke: #e2e8f0;
+    --bg: #f0f6ff;
+    --surface: #ffffff;
+    --green: #10b981;
+    --amber: #f59e0b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); }
+
+  .nav-shell {
+    background: var(--navy); padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px; position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: #fff; text-decoration: none; }
+  .nav-back {
+    color: rgba(255,255,255,.7); text-decoration: none; font-size: 0.875rem;
+    font-weight: 500; padding: 6px 14px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.15); transition: all .2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+  /* PROFILE HERO */
+  .profile-hero {
+    background: var(--navy);
+    padding: 40px 40px 80px;
+    position: relative; overflow: hidden;
+  }
+
+  .profile-hero::before {
+    content: '';
+    position: absolute; bottom: -60px; left: 50%;
+    width: 300px; height: 300px; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(14,165,233,.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .profile-hero-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 28px; position: relative; z-index: 1; }
+
+  .profile-avatar-wrap { position: relative; flex-shrink: 0; }
+
+  .profile-avatar {
+    width: 90px; height: 90px; border-radius: 22px;
+    background: linear-gradient(135deg, var(--sky), #0369a1);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: #fff;
+    border: 3px solid rgba(255,255,255,.15);
+  }
+
+  .avatar-status {
+    position: absolute; bottom: -4px; right: -4px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--green); border: 3px solid var(--navy);
+  }
+
+  .profile-info { flex: 1; }
+
+  .profile-name {
+    font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800;
+    color: #fff; letter-spacing: -0.5px; margin-bottom: 4px;
+  }
+
+  .profile-role {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(14,165,233,.2); border: 1px solid rgba(14,165,233,.3);
+    color: var(--sky); font-size: 0.78rem; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; margin-bottom: 10px;
+  }
+
+  .profile-meta {
+    display: flex; flex-wrap: wrap; gap: 16px;
+  }
+
+  .meta-item { color: rgba(255,255,255,.55); font-size: 0.82rem; display: flex; align-items: center; gap: 5px; }
+  .meta-item span { color: rgba(255,255,255,.8); font-weight: 500; }
+
+  /* CONTENT */
+  .content { max-width: 900px; margin: -44px auto 0; padding: 0 40px 60px; position: relative; z-index: 2; }
+
+  .content-grid { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
+
+  /* Form card */
+  .form-card {
+    background: var(--surface); border: 1px solid var(--stroke);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+  }
+
+  .form-section {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--stroke);
+  }
+
+  .form-section:last-child { border-bottom: none; }
+
+  .form-section-title {
+    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700;
+    color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field-full { grid-column: 1 / -1; }
+
+  .field-wrap label {
+    display: block; font-size: 0.78rem; font-weight: 600;
+    color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .field-wrap input,
+  .field-wrap textarea,
+  .field-wrap select {
+    width: 100%; border: 1.5px solid var(--stroke); border-radius: 10px;
+    padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    color: var(--ink); background: #f8fafc; outline: none; transition: all .2s;
+  }
+
+  .field-wrap input:focus,
+  .field-wrap textarea:focus { border-color: var(--sky); background: #fff; box-shadow: 0 0 0 3px rgba(14,165,233,.1); }
+  .field-wrap input[readonly] { background: #f1f5f9; color: var(--muted); cursor: not-allowed; }
+
+  .field-wrap textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+  /* Password strength */
+  .pwd-wrap { position: relative; }
+  .pwd-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--soft); font-size: 1rem;
+  }
+
+  .strength-bar { display: flex; gap: 3px; margin-top: 6px; }
+  .strength-seg { height: 3px; flex: 1; border-radius: 3px; background: var(--stroke); transition: background .3s; }
+  .strength-seg.weak   { background: var(--rose, #f43f5e); }
+  .strength-seg.medium { background: var(--amber); }
+  .strength-seg.strong { background: var(--green); }
+  .strength-text { font-size: 0.72rem; color: var(--soft); margin-top: 4px; }
+
+  .form-actions {
+    padding: 20px 28px;
+    display: flex; gap: 12px; align-items: center;
+  }
+
+  .btn-save {
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    color: #fff; border: none; border-radius: 10px; padding: 11px 28px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14,165,233,.3); }
+
+  .btn-ghost {
+    background: transparent; border: 1.5px solid var(--stroke);
+    border-radius: 10px; padding: 10px 20px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600;
+    color: var(--muted); cursor: pointer; text-decoration: none; display: inline-block; transition: all .2s;
+  }
+  .btn-ghost:hover { border-color: var(--sky); color: var(--sky); }
+
+  /* Sidebar */
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+  .info-card {
+    background: var(--surface); border: 1px solid var(--stroke);
+    border-radius: 14px; padding: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+  }
+
+  .info-card-title { font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+
+  .info-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--stroke); }
+  .info-row:last-child { border-bottom: none; }
+  .info-key { font-size: 0.8rem; color: var(--muted); }
+  .info-val { font-size: 0.82rem; font-weight: 600; color: var(--ink); text-align: right; }
+
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-sky   { background: #e0f2fe; color: #0369a1; }
+
+  /* Danger zone */
+  .danger-card {
+    background: #fff5f5; border: 1.5px solid #fecdd3;
+    border-radius: 14px; padding: 18px;
+  }
+
+  .danger-title { font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; color: #e11d48; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .danger-text { font-size: 0.8rem; color: #9f1239; line-height: 1.5; margin-bottom: 12px; }
+
+  .btn-danger {
+    background: transparent; border: 1.5px solid #fda4af; border-radius: 8px;
+    padding: 7px 14px; font-size: 0.8rem; font-weight: 600; color: #e11d48;
+    cursor: pointer; transition: all .2s; width: 100%;
+  }
+  .btn-danger:hover { background: #ffe4e6; border-color: #e11d48; }
+
+  @media (max-width: 768px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .field-grid { grid-template-columns: 1fr; }
+    .profile-hero-inner { flex-direction: column; text-align: center; }
+    .profile-meta { justify-content: center; }
+    .content { padding: 0 16px 40px; }
+  }
+</style>
+
+<nav class="nav-shell">
+  <a class="nav-brand" href="/">StudentMS</a>
+  <a href="{% url 'staff_home' %}" class="nav-back">← Dashboard</a>
+</nav>
+
+<!-- PROFILE HERO -->
+<div class="profile-hero">
+  <div class="profile-hero-inner">
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar">
+        {{ user.first_name|default:"S"|slice:":1" }}{{ user.last_name|default:"M"|slice:":1" }}
+      </div>
+      <div class="avatar-status"></div>
+    </div>
+    <div class="profile-info">
+      <h1 class="profile-name">{{ user.get_full_name|default:"Sarah Mitchell" }}</h1>
+      <div class="profile-role">🎓 Staff Member</div>
+      <div class="profile-meta">
+        <div class="meta-item">📧 <span>{{ user.email|default:"sarah.mitchell@studentms.edu" }}</span></div>
+        <div class="meta-item">📚 <span>{{ staff.department|default:"Computer Science" }}</span></div>
+        <div class="meta-item">📅 <span>Joined {{ staff.joined|default:"Aug 2022" }}</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
   {% if messages %}
     {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      <div style="background:#d1fae5;border:1.5px solid #6ee7b7;color:#065f46;border-radius:10px;padding:12px 18px;margin-bottom:16px;font-weight:600;">
+        ✅ {{ message }}
+      </div>
     {% endfor %}
   {% endif %}
 
-  <form method="POST" action="{% url 'staff_profile_update' %}" class="card p-3">
-    {% csrf_token %}
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label>First Name</label>
-        <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+  <div class="content-grid">
+
+    <!-- FORM -->
+    <form method="POST" action="{% url 'staff_profile_update' %}" class="form-card">
+      {% csrf_token %}
+
+      <div class="form-section">
+        <div class="form-section-title">👤 Personal Information</div>
+        <div class="field-grid">
+          <div class="field-wrap">
+            <label>First Name</label>
+            <input type="text" name="first_name" value="{{ user.first_name|default:'Sarah' }}" required placeholder="First name">
+          </div>
+          <div class="field-wrap">
+            <label>Last Name</label>
+            <input type="text" name="last_name" value="{{ user.last_name|default:'Mitchell' }}" required placeholder="Last name">
+          </div>
+          <div class="field-wrap field-full">
+            <label>Email Address</label>
+            <input type="email" value="{{ user.email|default:'sarah.mitchell@studentms.edu' }}" readonly>
+          </div>
+          <div class="field-wrap field-full">
+            <label>Address</label>
+            <textarea name="address" placeholder="Your address…">{{ staff.address|default:"42 Knowledge Lane, Academic Block C, Campus Road" }}</textarea>
+          </div>
+        </div>
       </div>
-      <div class="col-md-6 mb-3">
-        <label>Last Name</label>
-        <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+
+      <div class="form-section">
+        <div class="form-section-title">🔒 Change Password</div>
+        <div class="field-grid">
+          <div class="field-wrap field-full">
+            <label>New Password <span style="color:var(--soft);text-transform:none;font-weight:400;">(leave blank to keep current)</span></label>
+            <div class="pwd-wrap">
+              <input type="password" name="password" id="pwd-field" placeholder="Enter new password…" oninput="checkStrength(this.value)">
+              <button type="button" class="pwd-toggle" onclick="togglePwd()">👁</button>
+            </div>
+            <div class="strength-bar">
+              <div class="strength-seg" id="seg1"></div>
+              <div class="strength-seg" id="seg2"></div>
+              <div class="strength-seg" id="seg3"></div>
+              <div class="strength-seg" id="seg4"></div>
+            </div>
+            <div class="strength-text" id="strength-text"></div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-6 mb-3">
-        <label>Email</label>
-        <input type="email" class="form-control" value="{{ user.email }}" readonly>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-save">💾 Update Profile</button>
+        <a href="{% url 'staff_home' %}" class="btn-ghost">Cancel</a>
       </div>
-      <div class="col-md-6 mb-3">
-        <label>New Password (optional)</label>
-        <input type="password" name="password" class="form-control">
+    </form>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="info-card">
+        <div class="info-card-title">📋 Account Info</div>
+        <div class="info-row">
+          <span class="info-key">Status</span>
+          <span class="info-val"><span class="badge badge-green">● Active</span></span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Role</span>
+          <span class="info-val"><span class="badge badge-sky">Staff</span></span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Department</span>
+          <span class="info-val">Comp. Science</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Employee ID</span>
+          <span class="info-val">EMP-2248</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Subjects Assigned</span>
+          <span class="info-val">6</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Last Login</span>
+          <span class="info-val">Today, 8:52 AM</span>
+        </div>
       </div>
-      <div class="col-12 mb-3">
-        <label>Address</label>
-        <textarea name="address" class="form-control" rows="3">{{ staff.address }}</textarea>
+
+      <div class="info-card">
+        <div class="info-card-title">🏆 Achievements</div>
+        <div class="info-row">
+          <span class="info-key">✅ Profile complete</span>
+          <span class="info-val" style="color:var(--green);">Done</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">📝 100 classes marked</span>
+          <span class="info-val" style="color:var(--green);">Done</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">📊 50 results entered</span>
+          <span class="info-val" style="color:var(--amber);">82%</span>
+        </div>
       </div>
+
+      <div class="danger-card">
+        <div class="danger-title">⚠️ Danger Zone</div>
+        <div class="danger-text">Deactivating your account will revoke access to all portal features. This action requires admin approval.</div>
+        <button class="btn-danger" onclick="alert('Please contact admin to proceed.')">Request Deactivation</button>
+      </div>
+
     </div>
-    <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-primary">Update Profile</button>
-      <a href="{% url 'staff_home' %}" class="btn btn-secondary">Back</a>
-    </div>
-  </form>
+  </div>
 </div>
+
+<script>
+  function togglePwd() {
+    const f = document.getElementById('pwd-field');
+    f.type = f.type === 'password' ? 'text' : 'password';
+  }
+
+  function checkStrength(val) {
+    const segs = [document.getElementById('seg1'), document.getElementById('seg2'), document.getElementById('seg3'), document.getElementById('seg4')];
+    const txt = document.getElementById('strength-text');
+    segs.forEach(s => { s.className = 'strength-seg'; });
+    if (!val) { txt.textContent = ''; return; }
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const classes = ['weak', 'medium', 'medium', 'strong'];
+    const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+    const colors = ['', '#f43f5e', '#f59e0b', '#f59e0b', '#10b981'];
+    for (let i = 0; i < score; i++) segs[i].classList.add(classes[score - 1]);
+    txt.textContent = labels[score];
+    txt.style.color = colors[score];
+  }
+</script>
+
 {% endblock content %}
