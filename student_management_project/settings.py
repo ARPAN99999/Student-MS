@@ -163,6 +163,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+os.makedirs(STATIC_ROOT, exist_ok=True)
 # Only include directories that actually contain files
 STATICFILES_DIRS = []
 if os.path.isdir(os.path.join(BASE_DIR, 'student_management_project', 'static')):
