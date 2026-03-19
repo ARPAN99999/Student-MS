@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 import json
+import traceback
 
 
 from .models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel, Attendance, AttendanceReport, LeaveReportStaff, FeedBackStaffs, StudentResult
@@ -218,7 +219,9 @@ def save_attendance_data(request):
                                                  status=stud['status'])
             attendance_report.save()
         return HttpResponse("OK")
-    except:
+    except Exception as e:
+        print(f"Error in save_attendance_data: {e}")
+        traceback.print_exc()
         return HttpResponse("Error")
 
 
@@ -305,7 +308,9 @@ def update_attendance_data(request):
 
             attendance_report.save()
         return HttpResponse("OK")
-    except:
+    except Exception as e:
+        print(f"Error in update_attendance_data: {e}")
+        traceback.print_exc()
         return HttpResponse("Error")
 
 
