@@ -9,7 +9,17 @@ from .models import CustomUser, Staffs, Courses, Subjects, Students, Attendance,
 
 def student_home(request):
     try:
-        student_obj = Students.objects.get(admin=request.user.id)
+        # Check if student exists for the logged in user
+        student_obj = Students.objects.filter(admin=request.user.id).first()
+        if not student_obj:
+            # If student record is missing, try creating it automatically for student-type users
+            if str(request.user.user_type) == str(CustomUser.STUDENT):
+                student_obj = Students.objects.create(admin=request.user)
+                messages.info(request, "Your student profile has been automatically initialized.")
+            else:
+                messages.error(request, "Access Denied: No student record found for this account.")
+                return redirect('home')
+
         total_attendance = AttendanceReport.objects.filter(student_id=student_obj).count()
         attendance_present = AttendanceReport.objects.filter(
             student_id=student_obj,
