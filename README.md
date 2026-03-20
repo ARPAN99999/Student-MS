@@ -67,4 +67,4 @@ This project is optimized for deployment on **Vercel**.
 This project is open-source. Feel free to use and modify it for your educational purposes.
 
 ---
-Built with ❤️ by [Snehasish](https://github.com/Snehasish-tech)
+Built with ❤️ by TEAM PLUTO
