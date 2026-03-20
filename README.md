@@ -36,13 +36,12 @@ A comprehensive, enterprise-grade Student Management System built with **Django 
 ## 🖼️ Screenshots
 
 <p align="center">
-  <img src="static/images/screenshot_1.png" alt="Admin Dashboard" width="400">
-  <img src="static/images/screenshot_2.png" alt="Staff Portal" width="400">
+  
+  <img width="1822" height="919" alt="Screenshot 2026-03-20 113027" src="https://github.com/user-attachments/assets/71a669a9-37f3-401b-8a64-6ddf4c8e1874" />
+<img width="1761" height="903" alt="Screenshot 2026-03-20 113604" src="https://github.com/user-attachments/assets/a61bbb0e-e470-4cd5-bd38-c7964d850d56" />
+
 </p>
-<p align="center">
-  <img src="static/images/screenshot_3.png" alt="Student Portal" width="400">
-  <img src="static/images/screenshot_4.png" alt="Login Page" width="400">
-</p>
+
 
 ---
 
@@ -461,24 +460,6 @@ We welcome contributions from the community!
 ## 📄 License
 
 This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file for details.
-
----
-
-## 💬 Support
-
-For support, assistance, or questions:
-
-- **Email:** [contact@example.com](mailto:contact@example.com)
-- **GitHub Issues:** [Report a bug](https://github.com/Snehasish-tech/Student-MS/issues)
-- **Documentation:** [Wiki](https://github.com/Snehasish-tech/Student-MS/wiki)
-
----
-
-## 🙏 Acknowledgments
-
-- **Django Community** for the excellent framework
-- **Contributors** who have helped improve this project
-- **TEAM PLUTO** for the vision and dedication
 
 ---
 
